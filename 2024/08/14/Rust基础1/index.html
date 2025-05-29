@@ -1,0 +1,455 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Rust基础 | luouo</title><meta name="author" content="Luouo,1910054092@qq.com"><meta name="copyright" content="Luouo"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="函数函数组成① 声明函数的关键字 fn：函数的位置可以随便放，Rust不关心我们在哪里定义了函数，只要有定义即可 ② 函数名 ③ 参数和参数类型：Rust是强类型语言，因此需要为每一个函数参数都标识出它的具体类型 ④ 返回值类型 ⑤ 函数体 函数运用举例fn main() &#123;    let a &#x3D; 1;    let b &#x3D; 2;    let c &#x3D; add(a, b);    pri">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rust基础">
+<meta property="og:url" content="https://luoluonuoya0122.github.io/2024/08/14/Rust%E5%9F%BA%E7%A1%801/index.html">
+<meta property="og:site_name" content="luouo">
+<meta property="og:description" content="函数函数组成① 声明函数的关键字 fn：函数的位置可以随便放，Rust不关心我们在哪里定义了函数，只要有定义即可 ② 函数名 ③ 参数和参数类型：Rust是强类型语言，因此需要为每一个函数参数都标识出它的具体类型 ④ 返回值类型 ⑤ 函数体 函数运用举例fn main() &#123;    let a &#x3D; 1;    let b &#x3D; 2;    let c &#x3D; add(a, b);    pri">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://luoluonuoya0122.github.io/img/rust.png">
+<meta property="article:published_time" content="2024-08-14T10:01:40.000Z">
+<meta property="article:modified_time" content="2025-05-29T07:45:12.477Z">
+<meta property="article:author" content="Luouo">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://luoluonuoya0122.github.io/img/rust.png"><link rel="shortcut icon" href="/img/touxiang.png"><link rel="canonical" href="https://luoluonuoya0122.github.io/2024/08/14/Rust%E5%9F%BA%E7%A1%801/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>(()=>{
+      const saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+      
+      window.btf = {
+        saveToLocal: saveToLocal,
+        getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+          script.src = url
+          script.async = true
+          script.onerror = reject
+          script.onload = script.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            script.onload = script.onreadystatechange = null
+            resolve()
+          }
+
+          Object.keys(attr).forEach(key => {
+            script.setAttribute(key, attr[key])
+          })
+
+          document.head.appendChild(script)
+        }),
+
+        getCSS: (url, id = false) => new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+          link.rel = 'stylesheet'
+          link.href = url
+          if (id) link.id = id
+          link.onerror = reject
+          link.onload = link.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            link.onload = link.onreadystatechange = null
+            resolve()
+          }
+          document.head.appendChild(link)
+        }),
+
+        addGlobalFn: (key, fn, name = false, parent = window) => {
+          const pjaxEnable = false
+          if (!pjaxEnable && key.startsWith('pjax')) return
+
+          const globalFn = parent.globalFn || {}
+          const keyObj = globalFn[key] || {}
+    
+          if (name && keyObj[name]) return
+    
+          name = name || Object.keys(keyObj).length
+          keyObj[name] = fn
+          globalFn[key] = keyObj
+          parent.globalFn = globalFn
+        }
+      }
+    
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+      
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })()</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Rust基础',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-05-29 15:45:12'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/touxiang.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">3</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 中</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 英</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/img/rust.png);"><nav id="nav"><span id="blog-info"><a href="/" title="luouo"><span class="site-name">luouo</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 中</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 英</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Rust基础</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-08-14T10:01:40.000Z" title="发表于 2024-08-14 18:01:40">2024-08-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-05-29T07:45:12.477Z" title="更新于 2025-05-29 15:45:12">2025-05-29</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Rust基础"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h1><h2 id="函数组成"><a href="#函数组成" class="headerlink" title="函数组成"></a>函数组成</h2><p>① 声明函数的关键字 fn：函数的位置可以随便放，Rust不关心我们在哪里定义了函数，只要有定义即可 ② 函数名 ③ 参数和参数类型：Rust是强类型语言，因此需要为每一个函数参数都标识出它的具体类型 ④ 返回值类型 ⑤ 函数体</p>
+<h2 id="函数运用举例"><a href="#函数运用举例" class="headerlink" title="函数运用举例"></a>函数运用举例</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main() &#123;</span><br><span class="line">    let a = 1;</span><br><span class="line">    let b = 2;</span><br><span class="line">    let c = add(a, b);</span><br><span class="line"></span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fn add(i:i32 , j:i32) -&gt;i32 &#123;</span><br><span class="line">    i+j</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="函数返回"><a href="#函数返回" class="headerlink" title="函数返回"></a>函数返回</h2><p>函数返回有两种形态：<br>return + 分号</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn add(i:i32 , j:i32) -&gt;i32 &#123;</span><br><span class="line">    return i+j;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>没有return和分号</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn add(i:i32 , j:i32) -&gt;i32 &#123;</span><br><span class="line">    i+j</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="特殊返回类型"><a href="#特殊返回类型" class="headerlink" title="特殊返回类型"></a>特殊返回类型</h3><p>1、无返回值：如果一个函数没有返回值，那么就返回（）</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn add(i:i32 , j:i32) -&gt;() &#123;</span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>2、函数永不返回<br>当用！作函数返回类型的时候，表示函数永不返回，特别的，这种语法往往用作会导致程序崩溃的函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn add(i:i32 , j:i32)-&gt; ! &#123;</span><br><span class="line">    panic!(&quot;weeeee&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>无限循环时永不返回：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn add(i:i32 , j:i32)-&gt; ! &#123;</span><br><span class="line">    loop &#123;</span><br><span class="line">        //...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h1><h2 id="if-表达式"><a href="#if-表达式" class="headerlink" title="if 表达式"></a>if 表达式</h2><p>Rust不会自动将非布尔值转换成布尔值，必须显式的使用布尔值作为if的条件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main()&#123;</span><br><span class="line">    let number = 3;</span><br><span class="line"></span><br><span class="line">     if number &lt; 5&#123;</span><br><span class="line">        println!(&quot;condtion was true&quot;);</span><br><span class="line">     &#125;else&#123;</span><br><span class="line">        println!(&quot;condition was false&quot;);</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="else-if处理多重条件"><a href="#else-if处理多重条件" class="headerlink" title="else if处理多重条件"></a>else if处理多重条件</h3><p>只会执行第一个为ture的条件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main()&#123;</span><br><span class="line">    let number = 6;</span><br><span class="line"></span><br><span class="line">     if number % 4 == 0 &#123;</span><br><span class="line">        println!(&quot;number is divisible by 4&quot;);</span><br><span class="line">     &#125;else if number % 3 == 0 &#123;</span><br><span class="line">        println!(&quot;number is divisible by 3&quot;);</span><br><span class="line">     &#125;else if number % 2 == 0 &#123;</span><br><span class="line">        println!(&quot;number is divisible by 2&quot;);</span><br><span class="line">     &#125;else &#123;</span><br><span class="line">        println!(&quot;number is not divisible by 4,3,2&quot;);</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="在let语句中使用if"><a href="#在let语句中使用if" class="headerlink" title="在let语句中使用if"></a>在let语句中使用if</h3><p>number 变量将会绑定到表示的if 表达式结果的值上  </p>
+<ul>
+<li>if 的每个分支的可能的返回值必须是相同类型  </li>
+<li>代码块的值是其最后一个表达式的值，这里先不谈语句和表达式的概念，只要知道里面不该有分号  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main() &#123;</span><br><span class="line">   let condition = true;</span><br><span class="line">   let number = if condition &#123;</span><br><span class="line">       5</span><br><span class="line">   &#125;else&#123;</span><br><span class="line">      6</span><br><span class="line">   &#125;;</span><br><span class="line"></span><br><span class="line">   println!(&quot;&#123;&#125;&quot;,number)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="循环"><a href="#循环" class="headerlink" title="循环"></a>循环</h2><p>Rust有三种循环： loop、while、和for</p>
+<h3 id="loop"><a href="#loop" class="headerlink" title="loop"></a>loop</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main() &#123;</span><br><span class="line">    loop &#123;</span><br><span class="line">        println!(&quot;again!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="停止循环或者继续循环"><a href="#停止循环或者继续循环" class="headerlink" title="停止循环或者继续循环"></a>停止循环或者继续循环</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main() &#123;</span><br><span class="line">   let mut counter = 0;</span><br><span class="line">   loop &#123;</span><br><span class="line">       counter +=1;</span><br><span class="line"></span><br><span class="line">       if counter == 5 &#123;</span><br><span class="line">           continue;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       if counter == 10 &#123;</span><br><span class="line">           break;</span><br><span class="line">       &#125;</span><br><span class="line">       println!(&quot;&#123;&#125;&quot;,counter)</span><br><span class="line">   &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="从循环返回值"><a href="#从循环返回值" class="headerlink" title="从循环返回值"></a>从循环返回值</h4><p>和 if 类似，loop也能赋值，注意分号结束</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main() &#123;</span><br><span class="line">   let mut counter = 0;</span><br><span class="line"></span><br><span class="line">   let result = loop &#123;</span><br><span class="line">       counter +=1;</span><br><span class="line"></span><br><span class="line">       if counter == 10 &#123;</span><br><span class="line">           break counter*2;</span><br><span class="line">       &#125;</span><br><span class="line">       </span><br><span class="line">   &#125;;</span><br><span class="line">   println!(&quot;&#123;&#125;&quot;,result)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="循环标签：在多个循环之间消除歧义"><a href="#循环标签：在多个循环之间消除歧义" class="headerlink" title="循环标签：在多个循环之间消除歧义"></a>循环标签：在多个循环之间消除歧义</h4><p>break 将只退出内层循环，break ‘counting_up: 语句推出外层循环</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main() &#123;</span><br><span class="line">    let mut count = 0;</span><br><span class="line">    &#x27;counting_up: loop &#123;</span><br><span class="line">        let mut remaining = 10;</span><br><span class="line">        loop &#123;</span><br><span class="line">            println!(&quot;remaining:&#123;&#125;&quot;,remaining);</span><br><span class="line">            if remaining ==9 &#123;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">            if count == 2 &#123;</span><br><span class="line">                break &#x27;counting_up;</span><br><span class="line">            &#125;</span><br><span class="line">            remaining -= 1;</span><br><span class="line">        &#125;</span><br><span class="line">        count += 1;</span><br><span class="line">        println!(&quot;count:&#123;&#125;&quot;,count);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="while-条件循环"><a href="#while-条件循环" class="headerlink" title="while 条件循环"></a>while 条件循环</h3><p>当条件为 true 时执行循环；条件不是 true ，调用停止循环</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main() &#123;</span><br><span class="line">    let mut number = 3;</span><br><span class="line"></span><br><span class="line">    while number !=0 &#123;</span><br><span class="line">        println!(&quot;&#123;&#125;&quot;,number);</span><br><span class="line">        number -= 1;</span><br><span class="line">    &#125;</span><br><span class="line">    println!(&quot;LIFTOFF!&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="使用-for-遍历集合"><a href="#使用-for-遍历集合" class="headerlink" title="使用 for 遍历集合"></a>使用 for 遍历集合</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main() &#123;</span><br><span class="line">    let a = [10,20,30,40];</span><br><span class="line">    for e in a &#123;</span><br><span class="line">        println!(&quot;&#123;&#125;&quot;,e)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main() &#123;</span><br><span class="line">    for e in (1..=4).rev() &#123;</span><br><span class="line">        println!(&quot;&#123;&#125;&quot;,e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="所有权转移"><a href="#所有权转移" class="headerlink" title="所有权转移"></a>所有权转移</h4><p>对于实现了 copy 特性的数组而言，for in arr 并不会把 arr 的所有权转移，而是直接对其进行了拷贝，因此循环之后依然可以使用 arr  </p>
+<table>
+<thead>
+<tr>
+<th align="center">使用方法</th>
+<th align="center">等价使用方式</th>
+<th align="center">所有权</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">for item in collection</td>
+<td align="center">for item IntoIterator::into_iter(collection)</td>
+<td align="center">转移所有权</td>
+</tr>
+<tr>
+<td align="center">for item in &amp;collection</td>
+<td align="center">for item in collection.iter()</td>
+<td align="center">不可变借用</td>
+</tr>
+<tr>
+<td align="center">for item in &amp;mut collection</td>
+<td align="center">for item in collection.iter_mut()</td>
+<td align="center">可变借用</td>
+</tr>
+</tbody></table>
+<h1 id="基础类型"><a href="#基础类型" class="headerlink" title="基础类型"></a>基础类型</h1><h2 id="整型事例"><a href="#整型事例" class="headerlink" title="整型事例"></a>整型事例</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main() &#123;</span><br><span class="line">    print_int_show()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fn print_int_show() &#123;</span><br><span class="line">    let _i = 98;</span><br><span class="line">    let _i = 98_222;</span><br><span class="line">    let _i = 0xff;</span><br><span class="line">    let _i = 0o77;</span><br><span class="line">    let _i = 0b1111_0000;</span><br><span class="line">    let i = b&#x27;A&#x27;;</span><br><span class="line"></span><br><span class="line">    //98_222=98222</span><br><span class="line">    //10000000000=100_0000_0000</span><br><span class="line">    println!(&quot;The value of i is:&#123;&#125;&quot;,i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="浮点型"><a href="#浮点型" class="headerlink" title="浮点型"></a>浮点型</h2><p>·浮点类型数字有：f32和f64，默认浮点类型是f64<br>对于负数开平方根，会使用NaN来处理，如：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn nan() &#123;</span><br><span class="line">    let v = (-1.1_f64).sqrt();</span><br><span class="line">    println!(&quot;v:&#123;&#125;&quot;,v);</span><br><span class="line"></span><br><span class="line">    if v.is_nan() &#123;</span><br><span class="line">        println!(&quot;v is nan&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="布尔类型"><a href="#布尔类型" class="headerlink" title="布尔类型"></a>布尔类型</h2><p>布尔类型有两个可能的值：true和false，占用内存大小为1个字节</p>
+<h2 id="字符"><a href="#字符" class="headerlink" title="字符"></a>字符</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn char_show() &#123;</span><br><span class="line">    let x =&#x27;中&#x27;;</span><br><span class="line">    let y = &#x27;国&#x27;;</span><br><span class="line">    println!(&quot;x:&#123;&#125;,y:&#123;&#125;&quot;,x,y);</span><br><span class="line">    println!(&quot;占用字节：&#123;&#125;&quot;,std::mem::size_of_val(&amp;x));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="序列"><a href="#序列" class="headerlink" title="序列"></a>序列</h2><p>例如1..5不包含5，1..&#x3D;5包含5</p>
+<h2 id="类型强转"><a href="#类型强转" class="headerlink" title="类型强转"></a>类型强转</h2><p>用as关键字用于原始类型的强转，不适用于复合类型强转</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn convert() &#123;</span><br><span class="line">    let i = 5;</span><br><span class="line">    let f = i as f32;</span><br><span class="line">    println!(&quot;i:&#123;&#125;&quot;,i);</span><br><span class="line">    println!(&quot;f:&#123;&#125;&quot;,f);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="所有权"><a href="#所有权" class="headerlink" title="所有权"></a>所有权</h1><blockquote>
+<p>零开销内存回收的一种高效实现方式  </p>
+</blockquote>
+<p>Rust是一种系统编程语言，其设计目的是确保内存安全并防止数据竞争，而不依赖垃圾回收器，这种内存安全性主要通过所有权系统来实现。</p>
+<h2 id="内存回收"><a href="#内存回收" class="headerlink" title="内存回收"></a>内存回收</h2><blockquote>
+<p>硬件内存大小受限，数据泄露，隐私安全  </p>
+</blockquote>
+<p>主流编程语言的内存回收机制对比  </p>
+<ul>
+<li>静态语言  <ul>
+<li>在编译时对变量类型进行检查和确定的语言  </li>
+<li>c,c++,rust</li>
+</ul>
+</li>
+<li>动态语言<ul>
+<li>在运行时进行类型检查和确定的语言  </li>
+<li>JavaScript,python</li>
+</ul>
+</li>
+</ul>
+<p>回收方式对比  </p>
+<p>C&#x2F;C++</p>
+<ul>
+<li>内存管理方式：手动管理  </li>
+<li>特点：<ul>
+<li>程序员通过 malloc 和 free(C)或 new 和 delete(C++)手动分配和释放内存</li>
+<li>没有内置的垃圾回收机制</li>
+</ul>
+</li>
+<li>优点<ul>
+<li>高效且灵活，适用于对性能要求极高的系统级编程</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>容易出现内存泄漏，悬垂指针和缓冲区溢出等问题，需要非常小心的内存管理</li>
+</ul>
+</li>
+</ul>
+<p>JavaScript</p>
+<ul>
+<li>内存管理方式：垃圾回收</li>
+<li>特点：<ul>
+<li>浏览器和Node.js环境中均使用垃圾回收器</li>
+<li>采用标记-清除、标记-压缩分代回收等算法</li>
+</ul>
+</li>
+<li>优点：<ul>
+<li>自动内存管理，适合快速开发和运行在多平台上的应用</li>
+</ul>
+</li>
+<li>缺点：<ul>
+<li>垃圾回收机制在某些情况下可能导致性能问题，如 UI 线程停顿</li>
+</ul>
+</li>
+</ul>
+<p>Rust</p>
+<ul>
+<li>内存管理方式：所有权系统</li>
+<li>特点：<ul>
+<li>Rust 使用所有权系统进行内存管理，编译器在编译时通过静态分析来确保内存安全</li>
+<li>每个值都能一个所以者，在任何时候只能有一个有效的所有者</li>
+<li>通过借用机制来共享数据，同时保证数据竞争和悬垂指针的安全</li>
+</ul>
+</li>
+<li>优点：<ul>
+<li>在编译时保证内存安全，没有运行时开销</li>
+<li>避免了数据竞争和悬垂指针</li>
+</ul>
+</li>
+<li>缺点：<ul>
+<li>需要程序员理解和遵循所有权和借用规则，学习难</li>
+</ul>
+</li>
+</ul>
+<h2 id="练习题"><a href="#练习题" class="headerlink" title="练习题"></a>练习题</h2><p>用两种方式确保 s1、s2 都能正常打印</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main() &#123;</span><br><span class="line">   fn take_ownership(s:&amp;String) -&gt; &amp;String &#123;</span><br><span class="line">    s</span><br><span class="line">&#125; </span><br><span class="line">    let s1 = String::from(&quot;Hello&quot;);</span><br><span class="line">    //let s2 = take_ownership(s1.clone());</span><br><span class="line"></span><br><span class="line">    let s2 :&amp;String = take_ownership(&amp;s1);</span><br><span class="line"></span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,s1);</span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,s2);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li>不可变引用：通过不可变引用，可以读取数据，但不能修改数据。一个变量可以有多个不可变引用，但不能与可变引用共存。</li>
+<li>可变引用：通过可变引用，可以读取和修改数据。一个变量在某一时刻只能有一个可变引用，且不能与不可变引用共存。</li>
+</ul>
+<h2 id="引用的规则"><a href="#引用的规则" class="headerlink" title="引用的规则"></a>引用的规则</h2><ul>
+<li>同一时间内，一个变量只能有一个可变引用或多个不可变引用</li>
+<li>引用必须总是有效<blockquote>
+<p>引用规则vs所有权规则</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn test_let2() &#123;</span><br><span class="line">    let mut s = String::from(&quot;hello&quot;);</span><br><span class="line">    let r1 = &amp;s;</span><br><span class="line">    let r2 = &amp;s;</span><br><span class="line">    println!(&quot;&#123;r1&#125; and &#123;r2&#125;&quot;);</span><br><span class="line"></span><br><span class="line">    let r3 = &amp; mut s;</span><br><span class="line">    println!(&quot;&#123;r3&#125;&quot;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    let a = &quot;hello&quot;.to_string();</span><br><span class="line">    let b = a;</span><br><span class="line">    println!(&quot;b is &#123;b&#125;&quot;);</span><br><span class="line">    let c = b;</span><br><span class="line">    println!(&quot;c is &#123;c&#125;&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h2><p>生命周期是Rust用来保证引用有效性的机制，生命周期注解允许编译器推断引用的有效范围，确保在引用仍然有效时使用它们。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn test_lifetime() &#123;</span><br><span class="line">    fn longestStr&lt;&#x27;a&gt;(a:&amp;&#x27;a String,b:&amp;&#x27;a String) -&gt;&amp;&#x27;a String &#123;</span><br><span class="line">        if a.len() &gt; b.len()&#123;</span><br><span class="line">            a</span><br><span class="line">        &#125;else &#123;</span><br><span class="line">            b</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    let a = &quot;a&quot;.to_owned();</span><br><span class="line">    let b = &quot;b&quot;.to_owned();</span><br><span class="line">    let c = longestStr(&amp;a,&amp;b);</span><br><span class="line">    println!(&quot;a is &#123;a&#125;&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="Rust数组与切片"><a href="#Rust数组与切片" class="headerlink" title="Rust数组与切片"></a>Rust数组与切片</h1><ul>
+<li>类型 [T;N] 表示N个值的数组,每个值的类型为T。数组的大小是在编译期就已确定的常量，并且是类型的一部分，不能追加新元素或者缩小数组。</li>
+<li>类型 &amp;[T] 和 &amp;mut[T] 可称为T的共享切片和T的可变切片，它们是对一系列元素的引用，这些元素是某个其他值（比如数组或向量）的一部分。可以将切片视为指向其第一个元素的指针，以及从该点开始允许访问的元素数量的计数。可变切片 &amp;mut[T] 允许读取元素和修改元素，但不能共享；共享切片&amp;[T]允许在多个读取者之间共享访问权限,但不允许修改元素。</li>
+</ul>
+<p>类型中任意一种类型的值 v ，表达式 v.len() 都会给出 v 中的元素数，而 v [ i ] 引用的是 v 的第 i 个元素。v 的第一个元素是 v [ 0 ] ,最后一个元素是 v [ v.len()-1 ]。Rust 总是会检查 i 是偶在这个范围内，如果没在，则此表达式会出现 panic 。 v 的长度可能为 0 ，在这种情况下，任何对其进行索引的尝试都会出现 panic 。 i 的类型必须是 usize ，不能使用任何其他整型作为索引。 </p>
+<h2 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h2><ul>
+<li>数组的定义其实航是为分配一段连续的相同数据类型的内存块。</li>
+<li>数组是静态的。这意味着一旦定义和初始化，则永远不可更改它的长度。</li>
+<li>数组的元系有着相同的数据类型，每一个元素都独占者改据类型大小的内存块，也就是说。数组的内存大小等于数组的长度乘以数组的数据类型。</li>
+<li>数组中的每一个元素都按照顺序依次存储，这个顺序号既代表着元素的存储位置，也是数组元素的唯一标识。我们把这个标识称之为数组下标。注意，数姐下标从 0 开始。</li>
+<li>填充数组中的每一个元素的过程称为数组初始化。也就是说数组初始化就是为数组中的每一个元素赋值。</li>
+<li>可以更新或修改数组元素的值，但不能删除数组元素。如果要删除功能，你可以将它的值赋值为 0 或其它表示删除的值。</li>
+</ul>
+<p>示例</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn arr() &#123;</span><br><span class="line"></span><br><span class="line">    // let varibale_name : [dataType;size]= [value1,value2,value3];</span><br><span class="line">    let arr = [10,20,30,40];</span><br><span class="line">    println!(&quot;&#123;:?&#125;&quot;,arr);</span><br><span class="line">    </span><br><span class="line">    // let varibale_name : [dataType;size] = [default_value_for_elements;size];</span><br><span class="line">    let arr1 = [10;4];</span><br><span class="line">    println!(&quot;&#123;:?&#125;&quot;,arr1);</span><br><span class="line"></span><br><span class="line">    println!(&quot;arr len is :&#123;&#125;&quot;,arr.len());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="切片"><a href="#切片" class="headerlink" title="切片"></a>切片</h2><p>表示从某个包含多个元素的容器中取得局部数据，这个过程称为切片操作，Rust中的切片操作只允许获取一段连续的局部数据，切片操作获取到的数据称为切片数据。有三种数据类型支持切片操作：String类型，Array类型和Vec类型。</p>
+<h2 id="切片常用函数"><a href="#切片常用函数" class="headerlink" title="切片常用函数"></a>切片常用函数</h2><ul>
+<li>len( ): 取slice元素个数</li>
+<li>is_empty( ):判断 slice 是否为空</li>
+<li>contains( ):判断是否包含某个元素</li>
+<li>repeat( ):重复 slice 指定次数</li>
+<li>reverse( ):反转 slice</li>
+<li>join( ):将各元素压平并通过指定的分隔符连接起来</li>
+<li>swap( ):交换两个索引处的元素，如s.swap(1,3)</li>
+<li>windowa( ):以指定大小的窗口进行滚动迭代</li>
+<li>starts_with( ):判断 slice 是否以某个 slice 开头<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn slice_show() &#123;</span><br><span class="line">    // let a = [1,2,3,4,5];</span><br><span class="line">    // let slice = &amp;a[1..3];</span><br><span class="line">    // println!(&quot;&#123;:?&#125;&quot;,slice);</span><br><span class="line">    let arr = [1,2,3,4,5,6,7,8,9,10];</span><br><span class="line">    println!(&quot;len is &#123;:?&#125;&quot;,arr.len());</span><br><span class="line"></span><br><span class="line">    let s = &amp;arr[0..0];</span><br><span class="line">    println!(&quot;is_empty is &#123;:?&#125;&quot;,s.is_empty());</span><br><span class="line"></span><br><span class="line">    for i in arr.windows(3) &#123;</span><br><span class="line">        println!(&quot;windows is &#123;:?&#125;&quot;,i);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,arr.starts_with(&amp;[10]));</span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,arr.starts_with(&amp;[1]));</span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,arr.starts_with(&amp;[1,2,3]));</span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,arr.starts_with(&amp;[1,5]));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h1><p>字符串字面量的类型是 &amp;str， 例如 let s: &amp;str &#x3D; “hello, world” 中的 “hello, world” 的类型就是 &amp;str</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main() &#123;</span><br><span class="line">    let s = String::from(&quot;hello world!&quot;);</span><br><span class="line">    println!(&quot;&#123;&#125;&quot;, s);</span><br><span class="line"></span><br><span class="line">    let s = &quot;Hello world!&quot;;</span><br><span class="line">    println!(&quot;&#123;&#125;&quot;, s);    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="数组切片"><a href="#数组切片" class="headerlink" title="数组切片"></a>数组切片</h2><ul>
+<li>slice 允许你引用集合中一段连续的元素序列，而不引用整个集合</li>
+<li>slice 是一种引用，所以它没有所有权<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main() &#123;</span><br><span class="line">    let a = [1,2,3,4,5];</span><br><span class="line">    &#123;</span><br><span class="line">        let b = &amp;a[1..3];</span><br><span class="line">        dbg!(&quot;&#123;&#125;&quot;,b);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    dbg!(&quot;&#123;&#125;&quot;,a);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="什么是字符串？"><a href="#什么是字符串？" class="headerlink" title="什么是字符串？"></a>什么是字符串？</h2><ul>
+<li>字符串是由字符组成的连续集合</li>
+<li>Rust 中的字符是Unicode类型，因此每个字符占据四个字节，但是字符串是UTF-8编码，也就是字符串中的字符所占的字节数的变化的(1-4)</li>
+</ul>
+<h2 id="字符串字面值"><a href="#字符串字面值" class="headerlink" title="字符串字面值"></a>字符串字面值</h2><p>字符串字面值来说，我们在编译时就知道其内容，最终字面值文本被直接硬编码进可执行文件<br>字符串字面量 “Hello World” 就是&amp;str类型 它被硬编码进可执行程序的数据部分<br>既然我们已经存储了这个字符串，就需要一种方法来访问它：这就是切片引用&amp;str的意义所在。</p>
+<ul>
+<li>&amp;str是一种不可变引用，所以它没有所有权</li>
+<li>str类型是硬编码进可执行文件，也无法被修改</li>
+</ul>
+<h2 id="str-vs-String"><a href="#str-vs-String" class="headerlink" title="&amp;str vs String"></a>&amp;str vs String</h2><ul>
+<li>&amp;str：这是一个字符串切片，它是固定大小的，并且不能改变</li>
+<li>String 这是一个可增长，可改变的，拥有所有权的， UTF-8编码的字符串类型，它通常用于需要改变或者增长字符串的情况。</li>
+</ul>
+<h2 id="类型转换"><a href="#类型转换" class="headerlink" title="类型转换"></a>类型转换</h2><p>utf-8转换成字符串</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">use std::str;</span><br><span class="line">fn main3() &#123;</span><br><span class="line">    let b = [104,101,108,108,111,32,228,184,173,229,155,189];</span><br><span class="line"></span><br><span class="line">    let s = str::from_utf8(&amp;b).unwrap();</span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,s);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>字符串转换成utf-8</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">use std::str;</span><br><span class="line">fn main4() &#123;</span><br><span class="line">    let s = &quot;hello 中国&quot;.as_bytes();</span><br><span class="line">    dbg!(&quot;&#123;&#125;&quot;,s);</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>String–&gt;&amp;str  </p>
+<p>从String 类型转变为 &amp;str 是非常便捷的，而且无损的（性能无损，不会造成重写malloc或者数据移动）<br>另外，由于Rust实现了自动解引用，那么&amp;String在必要的时候可以自动转换为&amp;str，因此在很多函数中，如果接收参数是字符串的引用，通常会采用&amp;str作为入参，以获取更好的数据兼容性。<br>字符串是UTF-8编码，因此需要保证索引的字节刚好落在字符的边界</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main5() &#123;</span><br><span class="line">    let s = String::from(&quot;hello world&quot;);</span><br><span class="line"></span><br><span class="line">    say_hello(&amp;s);</span><br><span class="line">    say_hello(&amp;s[1..3]);</span><br><span class="line">    say_hello(s.as_str());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fn say_hello(s: &amp;str) &#123;</span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,s);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>字节数组Vec<u8>-&gt;String</u8></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main6() &#123;</span><br><span class="line">    let b = vec![104,101,108,108,111,32,228,184,173,229,155,189];</span><br><span class="line">    let s = String::from_utf8(b).unwrap();</span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,s);</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&amp;str-&gt;String<br>从一个&amp;str获得一个String却是低效的，因为要重新malloc数据</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main7() &#123;</span><br><span class="line">    say_hello1(String::from(&quot;hello world&quot;));</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fn say_hello1(s:String) &#123;</span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,s);</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="操作字符串"><a href="#操作字符串" class="headerlink" title="操作字符串"></a>操作字符串</h2><p>由于String是可变字符串，下面介绍Rust字符串的修改，添加，删除等常用方法</p>
+<h3 id="追加（push）"><a href="#追加（push）" class="headerlink" title="追加（push）"></a>追加（push）</h3><ul>
+<li>使用push()方法追加字符char</li>
+<li>使用push_str()方法追加字符串字面量</li>
+<li>两个方法都是在原有字符串上追加，并不会返回新的字符串</li>
+<li>字符串追加操作要修改原来的字符串，则该字符串必须是可变的，即字符串变量必须由mut关键字修饰<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main8() &#123;</span><br><span class="line">    let mut s = String::from(&quot;hello &quot;);</span><br><span class="line"></span><br><span class="line">    s.push_str(&quot;rust&quot;);</span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,s);</span><br><span class="line"></span><br><span class="line">    s.push(&#x27;!&#x27;);</span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,s);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="插入（insert）"><a href="#插入（insert）" class="headerlink" title="插入（insert）"></a>插入（insert）</h3><ul>
+<li>使用 insert() 方法插入单个字符 char</li>
+<li>使用 insert_str() 方法插入字符字面量</li>
+<li>这俩方法需要传入两个参数，第一个参数是字符（串）插入位置的索引，第二个参数是要插入的字符（串），索引从 0 开始计数。<ul>
+<li>如果越界则会发生错误。</li>
+<li>如果参数所给的位置不是合法的字符边界，也会发生错误</li>
+</ul>
+</li>
+<li>由于字符串插入操作要修改原来的字符串，则该字符串必须是可变的，即字符串变量必须由 mut 关键字修饰。<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main9() &#123;</span><br><span class="line">    let mut s = String::from(&quot;hello 中国&quot;);</span><br><span class="line"></span><br><span class="line">    s.insert(5,&#x27;,&#x27;);</span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,s);</span><br><span class="line"></span><br><span class="line">    s.insert_str(6, &quot;I like&quot;);</span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,s);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="替换-Replace"><a href="#替换-Replace" class="headerlink" title="替换 (Replace)"></a>替换 (Replace)</h3><h4 id="replace"><a href="#replace" class="headerlink" title="replace"></a>replace</h4><ul>
+<li>replace() 方法接收两个参数，第一个参数是要被替换的字符串，第二个参数是新的字符串。</li>
+<li>该方法会替换所有匹配到的字符串。</li>
+<li>该方法是返回一个新的字符串，而不是操作原来的字符串。<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main10() &#123;</span><br><span class="line">    let  s = String::from(&quot;hello rust 中国&quot;);</span><br><span class="line">    let n = s.replace(&quot;rust&quot;, &quot;Rust&quot;);</span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,n);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="replacen"><a href="#replacen" class="headerlink" title="replacen"></a>replacen</h4><ul>
+<li>replacen() 方法接收三个参数，前两个参数与 replace() 方法一样，第三个参数则表示替换的个数。</li>
+<li>该方法是返回一个新的字符串，而不是操作原来的字符串。<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main10() &#123;</span><br><span class="line">    let  s = String::from(&quot;hello rust 中国 rust&quot;);</span><br><span class="line">    let n = s.replacen(&quot;rust&quot;, &quot;Rust&quot;,1);</span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,n);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="replace-range"><a href="#replace-range" class="headerlink" title="replace_range"></a>replace_range</h4><ul>
+<li>replace_range 接收两个参数，第一个参数是要替换字符串的范围（Range），第二个参数是新的字符串。</li>
+<li>该方法是直接操作原来的字符串，不会返回新的字符串。</li>
+<li>该方法需要使用 mut 关键字修饰。<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main10() &#123;</span><br><span class="line">    let mut s = String::from(&quot;hello rust 中国&quot;);</span><br><span class="line">    s.replace_range(6..=10, &quot;Rust!&quot;);</span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,s);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="删除-Delete"><a href="#删除-Delete" class="headerlink" title="删除 (Delete)"></a>删除 (Delete)</h3><p>与字符串删除相关的方法有 4 个，它们分别是 pop()，remove()，truncate()，clear()。这四个方法仅适用于 String 类型。</p>
+<h4 id="pop"><a href="#pop" class="headerlink" title="pop"></a>pop</h4><ul>
+<li>删除并返回字符串的最后一个字符</li>
+<li>该方法是直接操作原来的字符串。</li>
+<li>其返回值是一个 Option 类型，如果字符串为空，则返回 None。<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main11() &#123;</span><br><span class="line">    let mut s = String::from(&quot;中文&quot;);</span><br><span class="line">    let p1 = s.pop();</span><br><span class="line">    let p2 = s.pop();</span><br><span class="line">    let p3 = s.pop();</span><br><span class="line"></span><br><span class="line">    dbg!(p1);</span><br><span class="line">    dbg!(p2);</span><br><span class="line">    dbg!(p3);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="remove"><a href="#remove" class="headerlink" title="remove"></a>remove</h4><ul>
+<li>该方法是直接操作原来的字符串。</li>
+<li>其返回值是删除位置的字符串。</li>
+<li>只接收一个参数，表示该字符起始索引位置。</li>
+<li>方法是按照字节来处理字符串的，如果参数所给的位置不是合法的字符边界，则会发生错误。<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main11() &#123;</span><br><span class="line">    let mut s = String::from(&quot;中文&quot;);</span><br><span class="line">    s.remove(0);// 删除第一个汉字</span><br><span class="line">    //s.remove(1);// 错误,注意边界</span><br><span class="line">    //s.remove(3);// 直接删除第二个汉字</span><br><span class="line"></span><br><span class="line">    dbg!(s);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="truncate"><a href="#truncate" class="headerlink" title="truncate"></a>truncate</h4><ul>
+<li>该方法是直接操作原来的字符串。</li>
+<li>删除字符串中从指定位置开始到结尾的全部字符</li>
+<li>该方法 truncate() 方法是按照字节来处理字符串的，如果参数所给的位置不是合法的字符边界，则会发生错误。<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main12() &#123;</span><br><span class="line">    let mut s = String::from(&quot;中文truncate&quot;);</span><br><span class="line">    s.truncate(3);</span><br><span class="line"></span><br><span class="line">    dbg!(s);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="clear"><a href="#clear" class="headerlink" title="clear"></a>clear</h4><ul>
+<li>清空字符串</li>
+<li>该方法是直接操作原来的字符串。<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main13() &#123;</span><br><span class="line">    let mut s = String::from(&quot;中文truncate&quot;);</span><br><span class="line">    s.clear();</span><br><span class="line"></span><br><span class="line">    dbg!(s);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="连接-Concatenate"><a href="#连接-Concatenate" class="headerlink" title="连接 (Concatenate)"></a>连接 (Concatenate)</h3><h4 id="使用-或者-连接字符串"><a href="#使用-或者-连接字符串" class="headerlink" title="使用 + 或者 +&#x3D; 连接字符串"></a>使用 + 或者 +&#x3D; 连接字符串</h4><ul>
+<li>当调用 + 的操作符时，相当于调用了 std::string 标准库中的 add() 方法，add() 方法的第二个参数必须为字符串的切片引用（Slice）类型。</li>
+<li><ul>
+<li>是返回一个新的字符串，所以变量声明可以不需要 mut 关键字修饰。<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main14() &#123;</span><br><span class="line">    let mut s1 = String::from(&quot;hello&quot;);</span><br><span class="line">    let s2 = &quot;world&quot;;</span><br><span class="line"></span><br><span class="line">    let s3 = s1+s2;</span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,s3);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fn main14() &#123;</span><br><span class="line">    let s1 = String::from(&quot;hello&quot;);</span><br><span class="line">    let s2 = String::from(&quot;world&quot;);</span><br><span class="line"></span><br><span class="line">    let s3 = s1+&amp;s2;</span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,s3);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<h4 id="使用-format-连接字符串"><a href="#使用-format-连接字符串" class="headerlink" title="使用 format! 连接字符串"></a>使用 format! 连接字符串</h4><ul>
+<li>format! 的用法与 print! 的用法类似<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main14() &#123;</span><br><span class="line">    let s1 = String::from(&quot;hello&quot;);</span><br><span class="line">    let s2 = String::from(&quot;world&quot;);</span><br><span class="line"></span><br><span class="line">    let s3 = format!(&quot;&#123;&#125;  &#123;&#125;&quot;,s1,s2);</span><br><span class="line"></span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,s3);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="字符串转义"><a href="#字符串转义" class="headerlink" title="字符串转义"></a>字符串转义</h3><p>我们可以通过转义的方式 \ 输出 ASCII 和 Unicode 字符。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main15() &#123;</span><br><span class="line">    //let s = &quot;I like Rust&quot;;</span><br><span class="line">    //let s = &quot;I like \x52\x75\x73\x74!&quot;;</span><br><span class="line">    let s = &quot;I like \u&#123;211D&#125;!&quot;;</span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,s)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>原样输出</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fn main15() &#123;</span><br><span class="line">    let s = &quot;I like \\x52\\x75\\x73\\x74!&quot;;</span><br><span class="line">    let s1 = r#&quot;I like &quot;\x52\x75\x73\x74!&quot;&quot;#;//如果字符串中包含双引号，可以在开头结尾加 # </span><br><span class="line">    let s2 = r###&quot;I like ##&quot;\x52\x75\x73\x74!&quot;#&quot;###;//如果字符串中包含 # 号，可以在开头和结尾加多个 # 号，最多加255个，只需保证与字符串中连续 # 号的个数不超过开头和结尾的 # 号的个数即可</span><br><span class="line"></span><br><span class="line">    println!(&quot;&#123;&#125;&quot;,s2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://luoluonuoya0122.github.io">Luouo</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://luoluonuoya0122.github.io/2024/08/14/Rust%E5%9F%BA%E7%A1%801/">https://luoluonuoya0122.github.io/2024/08/14/Rust%E5%9F%BA%E7%A1%801/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://luoluonuoya0122.github.io" target="_blank">luouo</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/rust.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="next-post pull-full" href="/2024/08/12/Rust%E5%9F%BA%E7%A1%80-%E5%8F%98%E9%87%8F%E5%92%8C%E5%8F%AF%E5%8F%98%E7%B1%BB%E5%9E%8B/" title="Rust基础-变量和可变类型"><img class="cover" src="/img/rust.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Rust基础-变量和可变类型</div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info is-center"><div class="avatar-img"><img src="/img/touxiang.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Luouo</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">3</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/xxxxx" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:1910054092@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%87%BD%E6%95%B0"><span class="toc-number">1.</span> <span class="toc-text">函数</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E7%BB%84%E6%88%90"><span class="toc-number">1.1.</span> <span class="toc-text">函数组成</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E8%BF%90%E7%94%A8%E4%B8%BE%E4%BE%8B"><span class="toc-number">1.2.</span> <span class="toc-text">函数运用举例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E8%BF%94%E5%9B%9E"><span class="toc-number">1.3.</span> <span class="toc-text">函数返回</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%B9%E6%AE%8A%E8%BF%94%E5%9B%9E%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.3.1.</span> <span class="toc-text">特殊返回类型</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6"><span class="toc-number">2.</span> <span class="toc-text">流程控制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#if-%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="toc-number">2.1.</span> <span class="toc-text">if 表达式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#else-if%E5%A4%84%E7%90%86%E5%A4%9A%E9%87%8D%E6%9D%A1%E4%BB%B6"><span class="toc-number">2.1.1.</span> <span class="toc-text">else if处理多重条件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8let%E8%AF%AD%E5%8F%A5%E4%B8%AD%E4%BD%BF%E7%94%A8if"><span class="toc-number">2.1.2.</span> <span class="toc-text">在let语句中使用if</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%AA%E7%8E%AF"><span class="toc-number">2.2.</span> <span class="toc-text">循环</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#loop"><span class="toc-number">2.2.1.</span> <span class="toc-text">loop</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%81%9C%E6%AD%A2%E5%BE%AA%E7%8E%AF%E6%88%96%E8%80%85%E7%BB%A7%E7%BB%AD%E5%BE%AA%E7%8E%AF"><span class="toc-number">2.2.1.1.</span> <span class="toc-text">停止循环或者继续循环</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%8E%E5%BE%AA%E7%8E%AF%E8%BF%94%E5%9B%9E%E5%80%BC"><span class="toc-number">2.2.1.2.</span> <span class="toc-text">从循环返回值</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BE%AA%E7%8E%AF%E6%A0%87%E7%AD%BE%EF%BC%9A%E5%9C%A8%E5%A4%9A%E4%B8%AA%E5%BE%AA%E7%8E%AF%E4%B9%8B%E9%97%B4%E6%B6%88%E9%99%A4%E6%AD%A7%E4%B9%89"><span class="toc-number">2.2.1.3.</span> <span class="toc-text">循环标签：在多个循环之间消除歧义</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#while-%E6%9D%A1%E4%BB%B6%E5%BE%AA%E7%8E%AF"><span class="toc-number">2.2.2.</span> <span class="toc-text">while 条件循环</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-for-%E9%81%8D%E5%8E%86%E9%9B%86%E5%90%88"><span class="toc-number">2.2.3.</span> <span class="toc-text">使用 for 遍历集合</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%89%80%E6%9C%89%E6%9D%83%E8%BD%AC%E7%A7%BB"><span class="toc-number">2.2.3.1.</span> <span class="toc-text">所有权转移</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E7%B1%BB%E5%9E%8B"><span class="toc-number">3.</span> <span class="toc-text">基础类型</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B4%E5%9E%8B%E4%BA%8B%E4%BE%8B"><span class="toc-number">3.1.</span> <span class="toc-text">整型事例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%AE%E7%82%B9%E5%9E%8B"><span class="toc-number">3.2.</span> <span class="toc-text">浮点型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%83%E5%B0%94%E7%B1%BB%E5%9E%8B"><span class="toc-number">3.3.</span> <span class="toc-text">布尔类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6"><span class="toc-number">3.4.</span> <span class="toc-text">字符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%8F%E5%88%97"><span class="toc-number">3.5.</span> <span class="toc-text">序列</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%9E%8B%E5%BC%BA%E8%BD%AC"><span class="toc-number">3.6.</span> <span class="toc-text">类型强转</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%89%80%E6%9C%89%E6%9D%83"><span class="toc-number">4.</span> <span class="toc-text">所有权</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%9B%9E%E6%94%B6"><span class="toc-number">4.1.</span> <span class="toc-text">内存回收</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0%E9%A2%98"><span class="toc-number">4.2.</span> <span class="toc-text">练习题</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BC%95%E7%94%A8"><span class="toc-number">5.</span> <span class="toc-text">引用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E7%94%A8%E7%9A%84%E8%A7%84%E5%88%99"><span class="toc-number">5.1.</span> <span class="toc-text">引用的规则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="toc-number">5.2.</span> <span class="toc-text">生命周期</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Rust%E6%95%B0%E7%BB%84%E4%B8%8E%E5%88%87%E7%89%87"><span class="toc-number">6.</span> <span class="toc-text">Rust数组与切片</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E7%BB%84"><span class="toc-number">6.1.</span> <span class="toc-text">数组</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%87%E7%89%87"><span class="toc-number">6.2.</span> <span class="toc-text">切片</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%87%E7%89%87%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0"><span class="toc-number">6.3.</span> <span class="toc-text">切片常用函数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-number">7.</span> <span class="toc-text">字符串</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E5%88%87%E7%89%87"><span class="toc-number">7.1.</span> <span class="toc-text">数组切片</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%AD%97%E7%AC%A6%E4%B8%B2%EF%BC%9F"><span class="toc-number">7.2.</span> <span class="toc-text">什么是字符串？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%AD%97%E9%9D%A2%E5%80%BC"><span class="toc-number">7.3.</span> <span class="toc-text">字符串字面值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#str-vs-String"><span class="toc-number">7.4.</span> <span class="toc-text">&amp;str vs String</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="toc-number">7.5.</span> <span class="toc-text">类型转换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-number">7.6.</span> <span class="toc-text">操作字符串</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%BD%E5%8A%A0%EF%BC%88push%EF%BC%89"><span class="toc-number">7.6.1.</span> <span class="toc-text">追加（push）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%92%E5%85%A5%EF%BC%88insert%EF%BC%89"><span class="toc-number">7.6.2.</span> <span class="toc-text">插入（insert）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9B%BF%E6%8D%A2-Replace"><span class="toc-number">7.6.3.</span> <span class="toc-text">替换 (Replace)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#replace"><span class="toc-number">7.6.3.1.</span> <span class="toc-text">replace</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#replacen"><span class="toc-number">7.6.3.2.</span> <span class="toc-text">replacen</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#replace-range"><span class="toc-number">7.6.3.3.</span> <span class="toc-text">replace_range</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A0%E9%99%A4-Delete"><span class="toc-number">7.6.4.</span> <span class="toc-text">删除 (Delete)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#pop"><span class="toc-number">7.6.4.1.</span> <span class="toc-text">pop</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#remove"><span class="toc-number">7.6.4.2.</span> <span class="toc-text">remove</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#truncate"><span class="toc-number">7.6.4.3.</span> <span class="toc-text">truncate</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#clear"><span class="toc-number">7.6.4.4.</span> <span class="toc-text">clear</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9E%E6%8E%A5-Concatenate"><span class="toc-number">7.6.5.</span> <span class="toc-text">连接 (Concatenate)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-%E6%88%96%E8%80%85-%E8%BF%9E%E6%8E%A5%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-number">7.6.5.1.</span> <span class="toc-text">使用 + 或者 +&#x3D; 连接字符串</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-format-%E8%BF%9E%E6%8E%A5%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-number">7.6.5.2.</span> <span class="toc-text">使用 format! 连接字符串</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E8%BD%AC%E4%B9%89"><span class="toc-number">7.6.6.</span> <span class="toc-text">字符串转义</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/08/14/Rust%E5%9F%BA%E7%A1%801/" title="Rust基础"><img src="/img/rust.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Rust基础"/></a><div class="content"><a class="title" href="/2024/08/14/Rust%E5%9F%BA%E7%A1%801/" title="Rust基础">Rust基础</a><time datetime="2024-08-14T10:01:40.000Z" title="发表于 2024-08-14 18:01:40">2024-08-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/08/12/Rust%E5%9F%BA%E7%A1%80-%E5%8F%98%E9%87%8F%E5%92%8C%E5%8F%AF%E5%8F%98%E7%B1%BB%E5%9E%8B/" title="Rust基础-变量和可变类型"><img src="/img/rust.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Rust基础-变量和可变类型"/></a><div class="content"><a class="title" href="/2024/08/12/Rust%E5%9F%BA%E7%A1%80-%E5%8F%98%E9%87%8F%E5%92%8C%E5%8F%AF%E5%8F%98%E7%B1%BB%E5%9E%8B/" title="Rust基础-变量和可变类型">Rust基础-变量和可变类型</a><time datetime="2024-08-12T13:02:06.000Z" title="发表于 2024-08-12 21:02:06">2024-08-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/08/10/Rust%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%90%AD%E5%BB%BA/" title="Rust部署与搭建"><img src="/img/rust.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Rust部署与搭建"/></a><div class="content"><a class="title" href="/2024/08/10/Rust%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%90%AD%E5%BB%BA/" title="Rust部署与搭建">Rust部署与搭建</a><time datetime="2024-08-10T07:09:21.000Z" title="发表于 2024-08-10 15:09:21">2024-08-10</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Luouo</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
