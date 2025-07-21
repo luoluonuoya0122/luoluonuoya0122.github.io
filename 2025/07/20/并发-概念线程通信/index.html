@@ -1,0 +1,337 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>并发 概念线程通信 | luouo</title><meta name="author" content="Luouo,1910054092@qq.com"><meta name="copyright" content="Luouo"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="并发并发与并行的区别  并发：多个任务在时间上交替执行 并行：多个任务同时执行  进程与线程  在大部分OS里，代码运行在进程中，OS 同时管理里多个进程 在你的程序里，各独立部分可以同时运行，运行这些独立部分的就是线程 多线程运行 提升性能表现 增加复杂性：无法保障各线程的执行顺序    多线程可导致的问题  竞争状态，线程以不一致的顺序访问数据或资源 死锁，两个线程彼此等待对方使用完所持有的资">
+<meta property="og:type" content="article">
+<meta property="og:title" content="并发 概念线程通信">
+<meta property="og:url" content="https://luoluonuoya0122.github.io/2025/07/20/%E5%B9%B6%E5%8F%91-%E6%A6%82%E5%BF%B5%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1/index.html">
+<meta property="og:site_name" content="luouo">
+<meta property="og:description" content="并发并发与并行的区别  并发：多个任务在时间上交替执行 并行：多个任务同时执行  进程与线程  在大部分OS里，代码运行在进程中，OS 同时管理里多个进程 在你的程序里，各独立部分可以同时运行，运行这些独立部分的就是线程 多线程运行 提升性能表现 增加复杂性：无法保障各线程的执行顺序    多线程可导致的问题  竞争状态，线程以不一致的顺序访问数据或资源 死锁，两个线程彼此等待对方使用完所持有的资">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://luoluonuoya0122.github.io/img/rust.png">
+<meta property="article:published_time" content="2025-07-20T12:59:57.000Z">
+<meta property="article:modified_time" content="2025-07-21T10:27:18.313Z">
+<meta property="article:author" content="Luouo">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://luoluonuoya0122.github.io/img/rust.png"><link rel="shortcut icon" href="/img/touxiang.png"><link rel="canonical" href="https://luoluonuoya0122.github.io/2025/07/20/%E5%B9%B6%E5%8F%91-%E6%A6%82%E5%BF%B5%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>(()=>{
+      const saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+      
+      window.btf = {
+        saveToLocal: saveToLocal,
+        getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+          script.src = url
+          script.async = true
+          script.onerror = reject
+          script.onload = script.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            script.onload = script.onreadystatechange = null
+            resolve()
+          }
+
+          Object.keys(attr).forEach(key => {
+            script.setAttribute(key, attr[key])
+          })
+
+          document.head.appendChild(script)
+        }),
+
+        getCSS: (url, id = false) => new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+          link.rel = 'stylesheet'
+          link.href = url
+          if (id) link.id = id
+          link.onerror = reject
+          link.onload = link.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            link.onload = link.onreadystatechange = null
+            resolve()
+          }
+          document.head.appendChild(link)
+        }),
+
+        addGlobalFn: (key, fn, name = false, parent = window) => {
+          const pjaxEnable = false
+          if (!pjaxEnable && key.startsWith('pjax')) return
+
+          const globalFn = parent.globalFn || {}
+          const keyObj = globalFn[key] || {}
+    
+          if (name && keyObj[name]) return
+    
+          name = name || Object.keys(keyObj).length
+          keyObj[name] = fn
+          globalFn[key] = keyObj
+          parent.globalFn = globalFn
+        }
+      }
+    
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+      
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })()</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '并发 概念线程通信',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-07-21 18:27:18'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/touxiang.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">12</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 中</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 英</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg fixed" id="page-header" style="background-image: url(/img/rust.png);"><nav id="nav"><span id="blog-info"><a href="/" title="luouo"><span class="site-name">luouo</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 中</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 英</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">并发 概念线程通信</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-20T12:59:57.000Z" title="发表于 2025-07-20 20:59:57">2025-07-20</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-07-21T10:27:18.313Z" title="更新于 2025-07-21 18:27:18">2025-07-21</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="并发 概念线程通信"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="并发"><a href="#并发" class="headerlink" title="并发"></a>并发</h1><p><strong>并发与并行的区别</strong></p>
+<ul>
+<li>并发：多个任务在时间上交替执行</li>
+<li>并行：多个任务同时执行</li>
+</ul>
+<p><strong>进程与线程</strong></p>
+<ul>
+<li>在大部分OS里，代码运行在进程中，OS 同时管理里多个进程</li>
+<li>在你的程序里，各独立部分可以同时运行，运行这些独立部分的就是线程</li>
+<li>多线程运行<ul>
+<li>提升性能表现</li>
+<li>增加复杂性：无法保障各线程的执行顺序</li>
+</ul>
+</li>
+</ul>
+<p><strong>多线程可导致的问题</strong></p>
+<ul>
+<li>竞争状态，线程以不一致的顺序访问数据或资源</li>
+<li>死锁，两个线程彼此等待对方使用完所持有的资源，线程无法继续</li>
+<li>只在某些情况下发生的bug，很难可靠地复制现象和修复</li>
+</ul>
+<p><strong>实现线程的方式</strong></p>
+<ul>
+<li>通过调用OS的API来创建线程：<code>1:1</code>模型<ul>
+<li>需要较小的运行时</li>
+</ul>
+</li>
+<li>语言自己实现的线程（绿色线程）：<code>M:N</code>模型<ul>
+<li>需要更大的运行时</li>
+</ul>
+</li>
+<li>Rust：需要权衡运行时的支持</li>
+<li>Rust标准库仅提供<code>1:1</code>模型的线程</li>
+</ul>
+<h2 id="Rust如何创建线程"><a href="#Rust如何创建线程" class="headerlink" title="Rust如何创建线程"></a>Rust如何创建线程</h2><ul>
+<li>通过<code>thread：：spawn</code>函数可以创建新线程：<ul>
+<li>参数：一个闭包（在新线程里运行的代码）<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">use</span> std::&#123;thread, time::Duration&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">   <span class="title function_ invoke__">thread_study</span>();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">thread_study</span>() &#123;</span><br><span class="line">    thread::<span class="title function_ invoke__">spawn</span>(|| &#123;</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="number">1</span>..<span class="number">10</span> &#123;</span><br><span class="line">            <span class="built_in">println!</span>(<span class="string">&quot;hi number &#123;&#125; from the sapwned thread!&quot;</span>,i);</span><br><span class="line">            thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_millis</span>(<span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="number">1</span>..<span class="number">5</span> &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;hi number &#123;&#125; from the main thread!&quot;</span>,i);</span><br><span class="line">        thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_millis</span>(<span class="number">1</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//输出</span></span><br><span class="line"><span class="comment">// hi number 1 from the main thread!</span></span><br><span class="line"><span class="comment">// hi number 1 from the sapwned thread!</span></span><br><span class="line"><span class="comment">// hi number 2 from the main thread!</span></span><br><span class="line"><span class="comment">// hi number 2 from the sapwned thread!</span></span><br><span class="line"><span class="comment">// hi number 3 from the main thread!</span></span><br><span class="line"><span class="comment">// hi number 3 from the sapwned thread!</span></span><br><span class="line"><span class="comment">// hi number 4 from the main thread!</span></span><br><span class="line"><span class="comment">// hi number 4 from the sapwned thread!</span></span><br><span class="line"><span class="comment">// hi number 5 from the sapwned thread!</span></span><br></pre></td></tr></table></figure>
+<strong>通过join Handle 来等待所有线程完成</strong></li>
+</ul>
+</li>
+<li>thread::spawn函数的返回值类型时JoinHandle</li>
+<li>JoinHandle持有值的所有权<ul>
+<li>调用其join方法，可以等待对应的其它线程的完成</li>
+</ul>
+</li>
+<li>join方法：调用handle的join方法会组织当前运行线程的执行，知道handle所表示的这些线程终结。<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">use</span> std::&#123;thread, time::Duration&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">   <span class="title function_ invoke__">thread_study</span>();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">thread_study</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">handle</span> = thread::<span class="title function_ invoke__">spawn</span>(|| &#123;</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="number">1</span>..<span class="number">10</span> &#123;</span><br><span class="line">            <span class="built_in">println!</span>(<span class="string">&quot;hi number &#123;&#125; from the sapwned thread!&quot;</span>,i);</span><br><span class="line">            thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_millis</span>(<span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="number">1</span>..<span class="number">5</span> &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;hi number &#123;&#125; from the main thread!&quot;</span>,i);</span><br><span class="line">        thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_millis</span>(<span class="number">1</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    handle.<span class="title function_ invoke__">join</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<strong>使用<code>move</code>闭包</strong></li>
+<li>move闭包通常和thread::spawn函数一起使用，它允许你使用其它线程的数据</li>
+<li>创建线程时，把值的所有权从一个线程转移到另一个线程<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">   <span class="title function_ invoke__">thread_study</span>();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">thread_study</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">v</span> = <span class="built_in">vec!</span>[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">handle</span> = thread::<span class="title function_ invoke__">spawn</span>(<span class="keyword">move</span> || &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;here is a vector: &#123;:?&#125;&quot;</span>,v);</span><br><span class="line">    &#125;);</span><br><span class="line">    handle.<span class="title function_ invoke__">join</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">&#125;<span class="comment">//如果不使用move关键字不知道v是否能存活到副线程运行</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="多线程通信"><a href="#多线程通信" class="headerlink" title="多线程通信"></a>多线程通信</h2><p><strong>消息传递</strong></p>
+<ul>
+<li>一种很流行且能保证安全并发的技术就是：信息传递<ul>
+<li>线程（或<code>Actor</code>）通过彼此发送信息（数据）来进行通信</li>
+</ul>
+</li>
+<li>Go语言的名言：不要用共享内存来通信，要用通信的方式来共享内存</li>
+<li>Rust：Channel（标准库提供）</li>
+</ul>
+<p><strong>Channel</strong></p>
+<ul>
+<li><code>Channel</code>包含：发送端、接收端</li>
+<li>调用发送端的方法，发送数据</li>
+<li>接收端会检查和接收到达的数据</li>
+<li>如果发送端、接收端中任意一端被丢弃了，那么<code>Channel</code>就被”关闭”了</li>
+</ul>
+<p><strong>创建channel</strong></p>
+<ul>
+<li>使用 mpsc::channel 函数来创建 Channel<ul>
+<li>mpsc 表示multiple producer,single consumer（多个生产者、一个消费者）</li>
+<li>返回一个 tuple（元组）：里面元素分别是发送端、接收端</li>
+</ul>
+</li>
+<li>使用 mpsc::sync_channel 来创建带缓冲区的 channel<ul>
+<li>入参为缓冲区大小，当缓冲区塞满时进行阻塞<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">use</span> std::&#123;sync::mpsc, thread, time::Duration&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">   <span class="title function_ invoke__">thread_study</span>();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">thread_study</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> (tx,rx) = mpsc::<span class="title function_ invoke__">channel</span>();</span><br><span class="line">    thread::<span class="title function_ invoke__">spawn</span>(<span class="keyword">move</span> ||&#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">vals</span> = <span class="built_in">vec!</span>[</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hi&quot;</span>),</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;from&quot;</span>),</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;the&quot;</span>),</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;thread&quot;</span>),</span><br><span class="line">        ];</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">val</span> <span class="keyword">in</span> vals &#123;</span><br><span class="line">            tx.<span class="title function_ invoke__">send</span>(val).<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">            thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_millis</span>(<span class="number">200</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">received</span> <span class="keyword">in</span> rx &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;Got : &#123;&#125;&quot;</span>,received);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">use</span> std::&#123;sync::mpsc, thread, time::Duration&#125;;</span><br><span class="line"><span class="comment">//多个发送端</span></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">   <span class="title function_ invoke__">thread_study</span>();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">thread_study</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> (tx,rx) = mpsc::<span class="title function_ invoke__">channel</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">tx1</span> = mpsc::Sender::<span class="title function_ invoke__">clone</span>(&amp;tx);</span><br><span class="line">    thread::<span class="title function_ invoke__">spawn</span>(<span class="keyword">move</span> ||&#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">vals</span> = <span class="built_in">vec!</span>[</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;hi&quot;</span>),</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;from&quot;</span>),</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;the&quot;</span>),</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;thread&quot;</span>),</span><br><span class="line">        ];</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">val</span> <span class="keyword">in</span> vals &#123;</span><br><span class="line">            tx.<span class="title function_ invoke__">send</span>(val).<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">            thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_millis</span>(<span class="number">200</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    thread::<span class="title function_ invoke__">spawn</span>(<span class="keyword">move</span> ||&#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">vals</span> = <span class="built_in">vec!</span>[</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;1hi&quot;</span>),</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;1from&quot;</span>),</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;1the&quot;</span>),</span><br><span class="line">            <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;1thread&quot;</span>),</span><br><span class="line">        ];</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">val</span> <span class="keyword">in</span> vals &#123;</span><br><span class="line">            tx1.<span class="title function_ invoke__">send</span>(val).<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">            thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_millis</span>(<span class="number">200</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">received</span> <span class="keyword">in</span> rx &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;Got : &#123;&#125;&quot;</span>,received);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<strong>总结</strong></li>
+</ul>
+</li>
+<li>发送端的 send 方法<ul>
+<li>参数：想要发送的数据</li>
+<li>返回：Result&lt;T,E&gt;<ul>
+<li>如果有问题(例如接收端已经被丢弃)，就返回一个错误语</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>接收端的方法<ul>
+<li>recv 方法：阻止当前线程执行，直到 Channel 中有值被送来<ul>
+<li>一旦有值收到，就返回 Result&lt;T,E&gt;</li>
+<li>当发送端关闭，就会收到一个错误</li>
+</ul>
+</li>
+<li>try_recv 方法：不会阻塞<ul>
+<li>立即返回 Result&lt;T,E&gt;:<ul>
+<li>有数据达到：返回 Ok，里面包含着数据</li>
+<li>否则，返回错误</li>
+</ul>
+</li>
+<li>通常会使用循环调用来检查 try_recv 的结果</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="课后习题1：实现多线程文件处理器"><a href="#课后习题1：实现多线程文件处理器" class="headerlink" title="课后习题1：实现多线程文件处理器"></a>课后习题1：实现多线程文件处理器</h2><ul>
+<li>任务描述<ul>
+<li>你需要编写一个多线程文件处理器，它从一个通道（channel）中接收文件路径，并在线程池中处理这些文件。文件处理的具体任务可以是读取文件内容并打印到控制台。你需要使用 Rust 的带缓冲区的 channel 来控制并发线程的数量，从而限制同时处理的文件数量。</li>
+</ul>
+</li>
+<li>具体要求<ul>
+<li>文件处理任务</li>
+<li>定义一个函数 process_file，该函数接受一个文件路径，读取文件内容，并将内容打印到控制台。</li>
+</ul>
+</li>
+<li>多线程控制：<ul>
+<li>创建一个带缓冲区的 channel，用于在主线程和工作线程之间传递文件路径。</li>
+<li>使用多线程来实现文件处理的并发性，限制线程的并发数量（例如，最多同时处理 4 个文件）。</li>
+</ul>
+</li>
+<li>主线程作为生产者：<ul>
+<li>主线程负责向通道发送文件路径。假设我们有 10 个文件路径要处理。</li>
+</ul>
+</li>
+<li>工作线程作为消费者：<ul>
+<li>创建多个工作线程，每个线程从通道中接收文件路径，并调用 process_file 函数来处理文件。<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<h2 id="课后习题2：使用-Channel-实现程序的优雅停止"><a href="#课后习题2：使用-Channel-实现程序的优雅停止" class="headerlink" title="课后习题2：使用 Channel 实现程序的优雅停止"></a>课后习题2：使用 Channel 实现程序的优雅停止</h2><ul>
+<li><p>任务描述</p>
+<ul>
+<li>在这道练习中，你需要编写一个多线程程序，该程序会创建多个工作线程，持续处理任务。在接收到停止信号时，所有工作线程应该优雅地停止工作，并确保所有未完成的任务都被处理完毕。</li>
+<li>你将使用 Rust 的 channel 来实现任务的调度和优雅停止机制。</li>
+</ul>
+</li>
+<li><p>具体要求</p>
+<ul>
+<li>工作线程：</li>
+<li>创建一个工作线程池，工作线程从通道接收任务并处理。</li>
+<li>工作线程应能够响应停止信号，并在完成当前任务后优雅地退出。</li>
+</ul>
+</li>
+<li><p>任务结构：</p>
+<ul>
+<li>任务可以是简单的打印操作，模拟一些耗时工作，例如打印任务 ID 并暂停一段时间。</li>
+</ul>
+</li>
+<li><p>优雅停止：</p>
+<ul>
+<li>通过发送一个特殊的停止信号，通知所有工作线程停止接收新的任务，并在完成当前任务后退出。</li>
+<li>确保所有已接收的任务都被处理完毕。</li>
+</ul>
+</li>
+<li><p>主线程控制：</p>
+<ul>
+<li>主线程应当能够发送任务，也能够在适当的时候发送停止信号，触发工作线程的优雅停止。<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://luoluonuoya0122.github.io">Luouo</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://luoluonuoya0122.github.io/2025/07/20/%E5%B9%B6%E5%8F%91-%E6%A6%82%E5%BF%B5%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1/">https://luoluonuoya0122.github.io/2025/07/20/%E5%B9%B6%E5%8F%91-%E6%A6%82%E5%BF%B5%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://luoluonuoya0122.github.io" target="_blank">luouo</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/rust.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="next-post pull-full" href="/2025/07/15/Macro%E5%AE%8F%E7%BC%96%E7%A8%8B/" title="Macro宏编程"><img class="cover" src="/img/rust.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Macro宏编程</div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info is-center"><div class="avatar-img"><img src="/img/touxiang.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Luouo</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">12</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/xxxxx" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:1910054092@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B9%B6%E5%8F%91"><span class="toc-number">1.</span> <span class="toc-text">并发</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Rust%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E7%BA%BF%E7%A8%8B"><span class="toc-number">1.1.</span> <span class="toc-text">Rust如何创建线程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1"><span class="toc-number">1.2.</span> <span class="toc-text">多线程通信</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%981%EF%BC%9A%E5%AE%9E%E7%8E%B0%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86%E5%99%A8"><span class="toc-number">1.3.</span> <span class="toc-text">课后习题1：实现多线程文件处理器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%982%EF%BC%9A%E4%BD%BF%E7%94%A8-Channel-%E5%AE%9E%E7%8E%B0%E7%A8%8B%E5%BA%8F%E7%9A%84%E4%BC%98%E9%9B%85%E5%81%9C%E6%AD%A2"><span class="toc-number">1.4.</span> <span class="toc-text">课后习题2：使用 Channel 实现程序的优雅停止</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/07/20/%E5%B9%B6%E5%8F%91-%E6%A6%82%E5%BF%B5%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1/" title="并发 概念线程通信"><img src="/img/rust.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="并发 概念线程通信"/></a><div class="content"><a class="title" href="/2025/07/20/%E5%B9%B6%E5%8F%91-%E6%A6%82%E5%BF%B5%E7%BA%BF%E7%A8%8B%E9%80%9A%E4%BF%A1/" title="并发 概念线程通信">并发 概念线程通信</a><time datetime="2025-07-20T12:59:57.000Z" title="发表于 2025-07-20 20:59:57">2025-07-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/07/15/Macro%E5%AE%8F%E7%BC%96%E7%A8%8B/" title="Macro宏编程"><img src="/img/rust.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Macro宏编程"/></a><div class="content"><a class="title" href="/2025/07/15/Macro%E5%AE%8F%E7%BC%96%E7%A8%8B/" title="Macro宏编程">Macro宏编程</a><time datetime="2025-07-15T14:59:27.000Z" title="发表于 2025-07-15 22:59:27">2025-07-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/07/14/%E9%97%AD%E5%8C%85/" title="闭包"><img src="/img/rust.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="闭包"/></a><div class="content"><a class="title" href="/2025/07/14/%E9%97%AD%E5%8C%85/" title="闭包">闭包</a><time datetime="2025-07-13T16:36:25.000Z" title="发表于 2025-07-14 00:36:25">2025-07-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/07/10/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%882/" title="智能指针2"><img src="/img/rust.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="智能指针2"/></a><div class="content"><a class="title" href="/2025/07/10/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%882/" title="智能指针2">智能指针2</a><time datetime="2025-07-10T13:04:02.000Z" title="发表于 2025-07-10 21:04:02">2025-07-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/07/09/%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/" title="生命周期"><img src="/img/rust.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="生命周期"/></a><div class="content"><a class="title" href="/2025/07/09/%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/" title="生命周期">生命周期</a><time datetime="2025-07-09T08:25:32.000Z" title="发表于 2025-07-09 16:25:32">2025-07-09</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Luouo</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
